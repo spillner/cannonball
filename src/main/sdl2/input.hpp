@@ -34,10 +34,12 @@ public:
         STEP  = 12,
         TIMER = 13,
         MENU = 14,     
+        ESCAPE = 15,
+        NUM_SPECIAL_KEYS
     };
 
-    bool keys[15];
-    bool keys_old[15];
+    bool keys[NUM_SPECIAL_KEYS];
+    bool keys_old[NUM_SPECIAL_KEYS];
 
     enum limits
     {

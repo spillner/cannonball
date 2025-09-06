@@ -23,6 +23,9 @@ public:
     void populate();
     void init(bool init_main_menu = true);
     void tick();
+    void set_next_menu(int which);
+
+    enum { MAIN_MENU, CONFIRM_QUIT };
 
 private:
     CabDiag* cabdiag;
@@ -94,15 +97,18 @@ private:
     std::vector<std::string> menu_s_tests;          // smartypi specific
     std::vector<std::string> menu_s_dips;           // smartypi specific
     std::vector<std::string> menu_s_enhance;        // smartypi specific
+    std::vector<std::string> menu_confirm_quit;
 
     std::vector<std::string> text_redefine;
     
     void populate_for_pc();
     void populate_controls();
     void populate_for_cabinet();
+    void toggle_visibility(bool on);
     void tick_ui();
     void draw_menu_options();
     void draw_text(std::string);
+    void close_menu(void);
     void tick_menu();
     bool select_pressed();
     void set_menu(std::vector<std::string>*);

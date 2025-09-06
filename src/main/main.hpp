@@ -21,6 +21,7 @@ namespace cannonball
 
     // Engine Master State
     extern int state;
+    extern int last_nonmenu_state;
     
     enum
     {
@@ -29,6 +30,7 @@ namespace cannonball
         STATE_MENU,
         STATE_INIT_GAME,
         STATE_GAME,
+        STATE_CONFIRM_QUIT,
         STATE_QUIT
     };
 }
