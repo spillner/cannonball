@@ -113,3 +113,6 @@ const static char* ANALOG_LABELS[3] = { "OFF", "ON", "ON WHEEL ONLY" };
 const static char* VIDEO_LABELS[3] = { "OFF", "ON", "STRETCH" };
 const static char* RUMBLE_LABELS[5] = { "OFF", "LOW", "MED", "HIGH", "FULL" };
 const static char* CAB_LABELS[3] = { "MOVING", "UPRIGHT", "MINI" };
+
+// Special menu to double-check before quitting
+const static char* ENTRY_RETURN_TO_GAME = "RETURN TO GAME";

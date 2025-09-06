@@ -44,7 +44,7 @@ public:
     void disable();
     int set_video_mode(video_settings_t* settings);
     void set_shadow_intensity(float);
-    void prepare_frame();
+    void prepare_frame(bool force_clear = false);
     void render_frame();
     bool supports_window();
     bool supports_vsync();

@@ -39,6 +39,7 @@
 using namespace cannonball;
 
 int    cannonball::state       = STATE_BOOT;
+int    cannonball::last_nonmenu_state = STATE_QUIT;  // Should always be reset before actually invoked
 double cannonball::frame_ms    = 0;
 int    cannonball::frame       = 0;
 bool   cannonball::tick_frame  = true;
@@ -75,9 +76,12 @@ static void process_events(void)
         {
             case SDL_KEYDOWN:
                 // Handle key presses.
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                    state = STATE_QUIT;
-                else
+                if (event.key.keysym.sym == SDLK_ESCAPE && state != STATE_MENU) {
+                    // Open the "Really quit?" menu
+                    last_nonmenu_state = state;
+                    state = STATE_CONFIRM_QUIT;
+                    menu->set_next_menu(Menu::CONFIRM_QUIT);
+                } else
                     input.handle_key_down(&event.key.keysym);
                 break;
 
@@ -155,7 +159,7 @@ static void tick()
             {
                 if (input.has_pressed(Input::TIMER)) outrun.freeze_timer = !outrun.freeze_timer;
                 if (input.has_pressed(Input::PAUSE)) pause_engine = !pause_engine;
-                if (input.has_pressed(Input::MENU))  state = STATE_INIT_MENU;
+                if (input.has_pressed(Input::MENU)) { last_nonmenu_state = state; state = STATE_INIT_MENU; }
             }
 
             if (!pause_engine || input.has_pressed(Input::STEP))
@@ -191,10 +195,12 @@ static void tick()
             osoundint.tick();
             break;
 
+        case STATE_CONFIRM_QUIT:
+            pause_engine = true;
         case STATE_INIT_MENU:
             oinputs.init();
             outrun.outputs->init();
-            menu->init();
+            menu->init(state == STATE_INIT_MENU);
             state = STATE_MENU;
             break;
     }
@@ -328,7 +334,13 @@ int main(int argc, char* argv[])
     // Initialize SDL Audio
     audio.init();
 
-    state = config.menu.enabled ? STATE_INIT_MENU : STATE_INIT_GAME;
+    if (config.menu.enabled) {
+        last_nonmenu_state = STATE_INIT_GAME;
+        state = STATE_INIT_MENU;
+    } else {
+        last_nonmenu_state = STATE_GAME;
+        state = STATE_INIT_GAME;
+    }
 
     // Initalize SDL Controls
     input.init(config.controls.pad_id,
