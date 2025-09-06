@@ -153,13 +153,13 @@ void Video::set_shadow_intensity(float f)
     renderer->set_shadow_intensity(f);
 }
 
-void Video::prepare_frame()
+void Video::prepare_frame(bool force_clear)
 {
     // Renderer Specific Frame Setup
     if (!renderer->start_frame())
         return;
 
-    if (!enabled)
+    if (!enabled || force_clear)
     {
         // Fill with black pixels
         for (int i = 0; i < config.s16_width * config.s16_height; i++)

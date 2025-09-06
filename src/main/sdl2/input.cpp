@@ -189,6 +189,10 @@ void Input::handle_key(const int key, const bool is_pressed)
         case SDLK_F5:
             keys[MENU] = is_pressed;
             break;
+
+        case SDLK_ESCAPE:
+            keys[ESCAPE] = is_pressed;
+            break;
     }
 }
 

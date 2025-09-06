@@ -35,6 +35,8 @@ const static uint16_t ROWS = 28;
 // Horizon Destination Position
 const static uint16_t HORIZON_DEST = 0x3A0;
 
+extern bool pause_engine;
+
 
 Menu::Menu()
 {
@@ -95,6 +97,9 @@ void Menu::populate()
     text_redefine.push_back("PRESS COIN IN");
     text_redefine.push_back("PRESS MENU");
     text_redefine.push_back("PRESS VIEW CHANGE");
+
+    menu_confirm_quit.push_back(ENTRY_RETURN_TO_GAME);
+    menu_confirm_quit.push_back(ENTRY_EXIT);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -227,8 +232,30 @@ void Menu::populate_for_cabinet()
     menu_s_enhance.push_back(ENTRY_BACK);
 }
 
+void Menu::toggle_visibility(bool on)
+{
+    if (on) {
+        video.enabled = true;
+        video.sprite_layer->set_x_clip(false); // Stop clipping in wide-screen mode.
+        video.sprite_layer->reset();
+        video.clear_text_ram();
+        video.tile_layer->restore_tiles();
+        ologo.enable(LOGO_Y);
+    } else {
+        video.clear_text_ram();
+        video.prepare_frame(true);
+    }
+}
+
 void Menu::init(bool init_main_menu)
 {   
+    if (!init_main_menu) {
+        // Quick-shift to a menu (e.g. confirm quit) that won't affect engine settings or require game reinitialization
+        toggle_visibility(true);
+        state = STATE_MENU;
+        return;
+    }
+
     // If we got a new high score on previous time trial, then save it!
     if (outrun.ttrial.new_high_score)
     {
@@ -237,12 +264,7 @@ void Menu::init(bool init_main_menu)
     }
 
     outrun.select_course(false, config.engine.prototype != 0);
-    video.enabled = true;
-    video.sprite_layer->set_x_clip(false); // Stop clipping in wide-screen mode.
-    video.sprite_layer->reset();
-    video.clear_text_ram();
-    video.tile_layer->restore_tiles();
-    ologo.enable(LOGO_Y);
+    toggle_visibility(true);
 
     // Setup palette, road and colours for background
     oroad.stage_lookup_off = 9;
@@ -262,15 +284,11 @@ void Menu::init(bool init_main_menu)
     oinitengine.rd_split_state = OInitEngine::SPLIT_NONE;
     oinitengine.car_increment = 0;
     oinitengine.change_width = 0;
-
     outrun.game_state = GS_INIT;
 
-    if (init_main_menu)
-    {
-        menu_stack.clear();
-        set_menu(&menu_main);
-        refresh_menu();
-    }
+    menu_stack.clear();
+    set_menu(&menu_main);
+    refresh_menu();
 
     // Reset audio, so we can play tones
     osoundint.has_booted = true;
@@ -322,6 +340,8 @@ void Menu::tick()
 
 void Menu::tick_ui()
 {
+    bool initially_paused = pause_engine;
+
     // Skip odd frames at 60fps
     frame++;
 
@@ -329,8 +349,8 @@ void Menu::tick_ui()
 
     if (state == STATE_MENU)
     {
-        tick_menu();
         draw_menu_options();
+        tick_menu();
     }
     else if (state == STATE_REDEFINE_KEYS)
     {
@@ -356,7 +376,7 @@ void Menu::tick_ui()
             oroad.horizon_base = HORIZON_DEST;
     }
     // Advance road
-    else
+    else if (!initially_paused)
     {
         uint32_t scroll_speed = (config.fps == 60) ? config.menu.road_scroll_speed : config.menu.road_scroll_speed << 1;
 
@@ -433,6 +453,13 @@ void Menu::draw_text(std::string s)
 
 #define SELECTED(string) boost::starts_with(OPTION, string)
 
+void Menu::close_menu(void)
+{
+    cannonball::state = cannonball::last_nonmenu_state;
+    pause_engine = false;
+    toggle_visibility(false);
+}
+
 void Menu::tick_menu()
 {
     // Tick Controls
@@ -450,6 +477,8 @@ void Menu::tick_menu()
         if (--cursor < 0)
             cursor = (int)menu_selected->size() - 1;
     }
+    else if (input.has_pressed(Input::ESCAPE))
+        close_menu();
     else if (select_pressed())
     {
         // Get option that was selected
@@ -543,6 +572,13 @@ void Menu::tick_menu()
         else if (menu_selected == &menu_about)
         {
             menu_back();
+        }
+        else if (menu_selected == &menu_confirm_quit)
+        {
+            if (SELECTED(ENTRY_EXIT))
+                cannonball::state = cannonball::STATE_QUIT;
+            else
+                close_menu();
         }
         else if (menu_selected == &menu_settings)
         {
@@ -848,6 +884,14 @@ void Menu::set_menu(std::vector<std::string> *menu)
     menu_selected = menu;
     cursor = 0;
     is_text_menu = (menu == &menu_about);
+}
+
+void Menu::set_next_menu(int which)
+{
+    if (which == CONFIRM_QUIT)
+        set_menu(&menu_confirm_quit);
+    else
+        set_menu(&menu_main);
 }
 
 void Menu::menu_back()
