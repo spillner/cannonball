@@ -300,9 +300,14 @@ target_link_libraries(cannonball
 # Copy useful files to build destination
 # -----------------------------------------------------------------------------
 
-configure_file(../res/config.xml ./config.xml 
-    COPYONLY
-)
+if (NOT EXISTS "./config.xml")
+    configure_file(../res/config.xml ./config.xml 
+        COPYONLY
+    )
+else ()
+    message(WARNING "Preserving existing config.xml. If it's from an older engine version, you may want "
+                    "to replace it with the default version from res/.")
+endif ()
 
 configure_file(../res/tilemap.bin ./res/tilemap.bin
     COPYONLY 
