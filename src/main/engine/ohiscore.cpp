@@ -393,8 +393,8 @@ int8_t OHiScore::read_controls()
         slow_threshold = 0x10;
     } else {
 	// Don't demand as much of a steering input to change letters when using keyboard
-        fast_threshold = 0x10;
-        slow_threshold = 0x04;
+        fast_threshold = 0x0A;
+        slow_threshold = 0x01;
     }
 
     // Determine when accelerator has been pressed then depressed
