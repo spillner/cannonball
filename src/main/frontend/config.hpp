@@ -96,6 +96,7 @@ struct controls_settings_t
     int gear;
     int steer_speed;   // Steering Digital Speed
     int pedal_speed;   // Pedal Digital Speed
+    int kb_score_sensitivity; // Keyboard sensitivity for entering high-score initials
     int padconfig[15]; // Joypad Button Config
     int keyconfig[12]; // Keyboard Button Config
     int pad_id;        // Use the N'th joystick on the system.

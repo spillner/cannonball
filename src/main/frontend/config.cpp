@@ -171,6 +171,7 @@ void Config::load()
     controls.gear          = pt_config.get("controls.gear", 0);
     controls.steer_speed   = pt_config.get("controls.steerspeed", 3);
     controls.pedal_speed   = pt_config.get("controls.pedalspeed", 4);
+    controls.kb_score_sensitivity = pt_config.get("controls.kb_score_sensitivity", 4);
     controls.rumble        = pt_config.get("controls.rumble", 1.0f);
     controls.keyconfig[0]  = pt_config.get("controls.keyconfig.up",      273);
     controls.keyconfig[1]  = pt_config.get("controls.keyconfig.down",    274);
@@ -288,6 +289,7 @@ bool Config::save()
     pt_config.put("controls.rumble",          controls.rumble);
     pt_config.put("controls.steerspeed",      controls.steer_speed);
     pt_config.put("controls.pedalspeed",      controls.pedal_speed);
+    pt_config.put("controls.kb_score_sensitivity", controls.kb_score_sensitivity);
     pt_config.put("controls.keyconfig.up",    controls.keyconfig[0]);
     pt_config.put("controls.keyconfig.down",  controls.keyconfig[1]);
     pt_config.put("controls.keyconfig.left",  controls.keyconfig[2]);

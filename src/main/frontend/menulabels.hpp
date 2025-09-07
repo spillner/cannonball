@@ -74,6 +74,7 @@ const static char* ENTRY_CONFIGUREGP = "CONFIGURE GAMEPAD";
 const static char* ENTRY_REDEFKEY = "REDEFINE KEYS";
 const static char* ENTRY_DSTEER = "DIGITAL STEER SPEED ";
 const static char* ENTRY_DPEDAL = "DIGITAL PEDAL SPEED ";
+const static char* ENTRY_KB_SCORE_ENTRY = "KEYBD SPEED ON HI SCORE PAGE ";
 
 // GamePad Menu
 const static char* ENTRY_ANALOG = "ANALOG ";

@@ -170,6 +170,7 @@ void Menu::populate_controls()
     menu_controls.push_back(ENTRY_REDEFKEY);
     menu_controls.push_back(ENTRY_DSTEER);
     menu_controls.push_back(ENTRY_DPEDAL);
+    menu_controls.push_back(ENTRY_KB_SCORE_ENTRY);
     menu_controls.push_back(ENTRY_BACK);
 
     if (menu_controls_gp.size() > 0)
@@ -775,6 +776,11 @@ void Menu::tick_menu()
                 if (++config.controls.pedal_speed > 9)
                     config.controls.pedal_speed = 1;
             }
+            else if (SELECTED(ENTRY_KB_SCORE_ENTRY))
+            {
+                if (++config.controls.kb_score_sensitivity > 5)
+                    config.controls.kb_score_sensitivity = 1;
+            }
             else if (SELECTED(ENTRY_BACK))
                 menu_back();
         }
@@ -949,6 +955,7 @@ void Menu::refresh_menu()
             if (SELECTED(ENTRY_GEAR))               set_menu_text(ENTRY_GEAR, GEAR_LABELS[config.controls.gear]);
             else if (SELECTED(ENTRY_DSTEER))        set_menu_text(ENTRY_DSTEER, Utils::to_string(config.controls.steer_speed));
             else if (SELECTED(ENTRY_DPEDAL))        set_menu_text(ENTRY_DPEDAL, Utils::to_string(config.controls.pedal_speed));
+            else if (SELECTED(ENTRY_KB_SCORE_ENTRY)) set_menu_text(ENTRY_KB_SCORE_ENTRY, Utils::to_string(config.controls.kb_score_sensitivity));
         }
         else if (menu_selected == &menu_controls_gp)
         {
